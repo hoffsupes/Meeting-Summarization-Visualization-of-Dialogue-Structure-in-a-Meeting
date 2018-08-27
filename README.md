@@ -15,3 +15,5 @@ Made for the Intelligent Analysis Room, CISL, RPI
 6.) Pink outline denotes someone who spoke previously, with the transcript they used for the same
 
 Data for the meeting summarization obtained from real data captured in a data collection session at CISL, RPI. Data about how long someone looks at another person is simulated.
+
+Credit for text wrapping function goes to @Zhao, RPI
