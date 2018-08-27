@@ -1,0 +1,1350 @@
+<!doctype html>
+<html>
+<title>L1 Visualization</title>
+  
+<head>
+    <meta charset = "utf-8">
+    <style>
+        /* sets the style of the title Meeting Analysis */
+        h1 {
+            font-size: 50px;
+            color: navy;
+            font-family: HelvNeueLightForIBM, Helvetica Neue, Arial, Helvetica, sans-serif;
+            text-align: left;
+        }
+        body {
+            background-color: white;
+        }
+    </style>
+    <title>Visualization</title>
+  
+    <svg width="300" height="200">
+  <defs>
+    <marker
+      id="arrow"
+      markerUnits="strokeWidth"
+      markerWidth="12"
+      markerHeight="12"
+      viewBox="0 0 12 12"
+      refX="6"
+      refY="6"
+      orient="auto">
+      <path d="M2,2 L10,6 L2,10 L6,6 L2,2" style="fill: #000;"></path>
+    </marker>
+  </defs>
+  
+<!-- <line x1="0" y1="0" x2="200" y2="50"  stroke="red" stroke-width="2" marker-end="url(#arrow)"/> -->
+
+<!-- <path d="M20,70 T80,100 T160,80 T200,90" fill="white" stroke="red" stroke-width="2" marker-start="url(#arrow)" marker-mid="url(#arrow)" marker-end="url(#arrow)"/> -->
+</svg>
+</head>
+<body>
+  <h1>Meeting Analysis</h1>
+  <h2>Meeting Timeline</h2>
+    <p id="time_value"></p>
+    <div id="time_line"></div>
+  
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+  <script src="https://unpkg.com/d3-simple-slider@0.2.1/build/d3-simple-slider.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/5.0.4/math.js"></script>
+  <script src="https://d3plus.org/js/d3plus.js"></script>
+  <script src="https://d3js.org/d3-dsv.v1.min.js"></script>
+  <script src="https://d3js.org/d3-fetch.v1.min.js"></script>  
+  <script src="math.js" type="text/javascript"></script>
+  
+  <body>
+
+<!--   
+  
+  <div class='speakl'>
+<div class='speak-tit'></div>
+<div class='speak-scal'>
+  <ul class='speak-lab'>
+    <li><span style='background:#F1EEF6;'></span> </li>
+    <li><span style='background:#BDC9E1;'></span></li>
+    <li><span style='background:#74A9CF;'></span></li>
+    <li><span style='background:#2B8CBE;'></span></li>
+    <li><span style='background:#045A8D;'></span></li>
+    <div class='some'><font size="2">Speaking Time</font></div>
+  </ul>
+</div>
+  </div>
+
+<style type='text/css'>
+  div.some{
+    position:absolute;
+    top: 8px;
+    left: 300px;
+  }
+  .speakl .speak-tit {
+    text-align: left;
+    margin-bottom: 328px;
+    font-weight: bold;
+    font-size: 90%;
+    }
+  .speakl .speak-scal ul {
+    margin: 0;
+    margin-left: 400px;
+    padding: 0;
+    float: left;
+    list-style: none;
+    }
+  .speakl .speak-scal ul li {
+    display: block;
+    float: left;
+    width: 50px;
+    margin-bottom: 6px;
+    text-align: center;
+    font-size: 80%;
+    list-style: none;
+    }
+  .speakl ul.speak-lab li span {
+    display: block;
+    float: left;
+    height: 15px;
+    width: 50px;
+    }
+  .speakl .legend-source {
+    font-size: 70%;
+    color: #999;
+    clear: both;
+    }
+  .speakl a {
+    color: #777;
+    }
+</style>
+  
+  
+<div class='colormap'>
+<div class='title'>Color Coding</div>
+    
+<div class='scale'>
+  <ul class='labels'>
+    <li><span style='background:#ff0000;'></span>Currently Speaking</li>
+    <li><span style='background:#ff99dd;'></span>Previously Speaking</li>
+
+    <div class='circles'><b>Circles represent People</b></div>
+  </ul>
+</div>
+
+<style type='text/css'>
+  div.circles {
+    position: absolute;
+    top: 100px;
+    left: 505px;
+ 
+}
+  div.colormap {
+    position: absolute;
+    top: 300px;
+    left: 30px;
+ 
+}
+  .colormap .title {
+    text-align: left;
+    margin-bottom: 40px;
+    margin-left: 500px;
+    font-weight: bold;
+    font-size: 90%;
+    }
+  .colormap .scale ul {
+    margin: 0;
+    margin-bottom: 5px;
+    padding: 0;
+    float: left;
+    list-style: none;
+    }
+  .colormap .scale ul li {
+    font-size: 80%;
+    list-style: none;
+    margin-left: 500px;
+    line-height: 18px;
+    margin-bottom: 2px;
+    }
+  .colormap ul.labels li span {
+    display: block;
+    float: left;
+    height: 16px;
+    width: 30px;
+    margin-right: 10px;
+    margin-left: 0;
+    margin-bottom: 10
+    border: 1px solid #999;
+    }
+  .colormap .legend-source {
+    font-size: 70%;
+    color: #999;
+    clear: both;
+    }
+  .colormap a {
+    color: #777;
+    }
+</style>
+
+   -->
+    <script>
+        // var ourRequest = new XMLHttpRequest();
+        // ourRequest.open('GET', *********FILE_LOCATION***************)
+        // ourRequest.onload = function(){
+        //     var RAWJSON_INFO=JSON.parse(ourRequest.responseText);
+        // arbitrarily sets width, height, and diameter
+        
+        
+        ////////// TODO: Concrete method to read in data
+        
+        //////////////////////////////////////////////////////////////////////////
+        // test_data
+        // Assumption the data is sorted in time! That is, ID 0 happens before ID 1 and so on
+        
+        // var test_data = [
+        // {speech:"this is a test",time:2,userID:0},
+        // {speech:"This is a test but this needs to be something long",time:5,userID:1},
+        // {speech:"The test string is a good thing to use for development",time:6,userID:2},
+        // {speech:"A complex sentence is a sentence that contains an independent clause and one or more dependent clauses. An independent clause can stand alone as a sentence, but a dependent clause even though it has a subject and a verb cannot stand alone.",time:40,userID:1},
+        // {speech:"JavaScript also defines two trivial data types, null and undefined, each of which defines only a single value. In addition to these primitive data types, JavaScript supports a composite data type known as object. We will cover objects in detail in a separate chapter. Note − JavaScript does not make a distinction between integer values and floating-point values. All numbers in JavaScript are represented as floating-point values. JavaScript represents numbers using the 64-bit floating-point format defined by the IEEE 754 standard.",time:15,userID:1},
+        // {speech:"Now, imagine the challenge for Facebook. Facebook deals with enormous amount of text data on a daily basis in the form of status updates, comments etc. And it is all the more important for Facebook to utilise this text data to ",time:4,userID:3},
+        // {speech:"This library has gained a lot of traction in the NLP community and is a possible substitution to the gensim ",time:2,userID:4},
+        // {speech:"low magnitude. But FastText can produce vectors better than random by breaking the above word in chunks and using the vectors for those chunks to create a final vector for the word. In this particular",time:3,userID:5},
+        // {speech:"Words in their natural form cannot be used for any Machine Learning task in general. One way to use the words is to transform these words into some representations that capture some attributes of the word. It is analogous",time:3,userID:5},
+        // {speech:"This is a test but this needs to be something long",time:10,userID:6},
+        // {speech:"Something like this is unecessary.. ",time:10,userID:6}  
+        // ];        
+        //////////////////////////////////////////////////////////////////////////
+        
+        //////////////////////////////////////////////////////////////////////////
+        /// TODO: (Not applicable to live data) After reading in data from various files, incorporate in all files into a single variable with all correlated speech and corresponding user ID's (including labeling which user says what and assigning a user id for every user and collecting it all into a variable as seen above), will depend on how we read the data, person by person? that is data comes in one person at a time? or multiple entries of people?
+        
+        // For now assuming implementing for one person at a time, that is, records of two people kept, the one who is speaking and the one who was previously speaking. The number of people is assumed to be known. The other data like the times someone spoke is accumulated though.
+        
+        // NOTE: Assuming no new users suddenly join in, focusing on getting a simple functionality working
+        
+        // var test_data = d3.json("Speech_Data.json");
+      //  var test_data = speech_data;
+      
+  
+      
+var speech_data = [{"_id":{"$oid":"5b743d4f51195edc1b2e236f"},"speech":"Stellar map because he went on and on the lunar landscape and it is much different from from art and it's a two hundred mile trip. ","time":{"$numberDouble":"17.795912504196167"},"location":[{"$numberDouble":"-0.8267733147006124"},{"$numberDouble":"0.3624002645247594"},{"$numberDouble":"0.17993020065354282"}],"userID":{"$numberInt":"0"},"confidence":{"$numberInt":"1"}},
+{"_id":{"$oid":"5b743d4f51195edc1b2e2370"},"speech":"So without it you could be basically lost. ","time":{"$numberDouble":"8.981914043426514"},"location":[{"$numberDouble":"-0.8265324660692208"},{"$numberDouble":"0.3619074853395206"},{"$numberDouble":"0.18950884292493686"}],"userID":{"$numberInt":"0"},"confidence":{"$numberDouble":"0.9999988964116424"}},
+{"_id":{"$oid":"5b743d4f51195edc1b2e2371"},"speech":"And the other one is the style of map. So first you pull out the stellar map and you find out the direction you're going and then you jump up. ","time":{"$numberDouble":"19.370071172714233"},"location":[{"$numberDouble":"0.7418094603290133"},{"$numberDouble":"0.39778979459821107"},{"$numberDouble":"0.8893028313451093"}],"userID":{"$numberInt":"2"},"confidence":{"$numberInt":"1"}},
+{"_id":{"$oid":"5b743d4f51195edc1b2e2372"},"speech":"Any high because it's a moon and then you open up the oxygen tank and release the gas to the opposite direction. ","time":{"$numberDouble":"18.220938205718994"},"location":[{"$numberDouble":"0.728830996798848"},{"$numberDouble":"0.394327175534969"},{"$numberDouble":"0.8797435054695942"}],"userID":{"$numberInt":"2"},"confidence":{"$numberInt":"1"}},
+{"_id":{"$oid":"5b743d4f51195edc1b2e2373"},"speech":"","time":{"$numberDouble":"2.216789484024048"},"location":[{"$numberDouble":"0.7617214424487553"},{"$numberDouble":"0.4098536412176348"},{"$numberDouble":"0.9107375958105512"}],"userID":{"$numberInt":"2"},"confidence":{"$numberInt":"1"}},
+{"_id":{"$oid":"5b743d4f51195edc1b2e2374"},"speech":"And you're flying towards the mother ship ","time":{"$numberDouble":"9.327940702438354"},"location":[{"$numberDouble":"0.774370890549106"},{"$numberDouble":"0.40877691170995945"},{"$numberDouble":"0.9016042142441832"}],"userID":{"$numberInt":"2"},"confidence":{"$numberDouble":"0.9999597689867711"}},
+{"_id":{"$oid":"5b743d4f51195edc1b2e2375"},"speech":"But I think ","time":{"$numberDouble":"11.198988676071167"},"location":[{"$numberDouble":"0.5425664268874342"},{"$numberDouble":"0.38735791602246616"},{"$numberDouble":"0.11169528881419745"}],"userID":{"$numberInt":"1"},"confidence":{"$numberInt":"1"}},
+{"_id":{"$oid":"5b743d4f51195edc1b2e2376"},"speech":"Gon na be with a lot less forest and if you are from earth, so falling wouldn't be as much of a problem. ","time":{"$numberDouble":"18.755417585372925"},"location":[{"$numberDouble":"0.5489415995709289"},{"$numberDouble":"0.38885088145642266"},{"$numberDouble":"0.11400971764777933"}],"userID":{"$numberInt":"1"},"confidence":{"$numberInt":"1"}},
+{"_id":{"$oid":"5b743d4f51195edc1b2e2377"},"speech":"","time":{"$numberDouble":"3.7364814281463623"},"location":[{"$numberDouble":"0.5328029125660046"},{"$numberDouble":"0.38908135031594904"},{"$numberDouble":"0.10540330849249703"}],"userID":{"$numberInt":"1"},"confidence":{"$numberDouble":"0.9998525635442785"}},
+{"_id":{"$oid":"5b743d4f51195edc1b2e2378"},"speech":"Two hundred miles is a lot and if you're all but like one little degree, you can end up somewhere. You know different, so you definitely need the ","time":{"$numberDouble":"18.057395458221436"},"location":[{"$numberDouble":"0.5269036668786267"},{"$numberDouble":"0.3864622202554698"},{"$numberDouble":"0.11585158777564215"}],"userID":{"$numberInt":"1"},"confidence":{"$numberDouble":"0.9999571317811253"}},
+{"_id":{"$oid":"5b743d4f51195edc1b2e2379"},"speech":"Mad and oxygen and water and everything else I feel like you, don't need the exercise. I don't do that. ","time":{"$numberDouble":"18.315930604934692"},"location":[{"$numberDouble":"0.5210126372380823"},{"$numberDouble":"0.39237472148752617"},{"$numberDouble":"0.1094297623821313"}],"userID":{"$numberInt":"1"},"confidence":{"$numberDouble":"0.999967657696812"}},
+{"_id":{"$oid":"5b743d4f51195edc1b2e237a"},"speech":"I think this ","time":{"$numberDouble":"1.3747684955596924"},"location":[{"$numberDouble":"0.518130435759438"},{"$numberDouble":"0.3863842754609059"},{"$numberDouble":"0.10882966114752282"}],"userID":{"$numberInt":"1"},"confidence":{"$numberInt":"1"}},
+{"_id":{"$oid":"5b743d4f51195edc1b2e237b"},"speech":"On the moon, of course, he eighteen people to get lost and not yet on someone discovered and mapped landscape, FAQ value, ","time":{"$numberDouble":"18.7910897731781"},"location":[{"$numberDouble":"-0.9029518752672681"},{"$numberDouble":"0.37728700303029983"},{"$numberDouble":"0.2997000928132454"}],"userID":{"$numberInt":"0"},"confidence":{"$numberDouble":"0.9999985396374493"}},
+{"_id":{"$oid":"5b743d4f51195edc1b2e237c"},"speech":"Movies on something having them up is important and the gallons of water and the first aid kit again important too, because you don't know what can happen on the ","time":{"$numberDouble":"18.86798119544983"},"location":[{"$numberDouble":"-0.9025803146958483"},{"$numberDouble":"0.37735491203168237"},{"$numberDouble":"0.29543777231696655"}],"userID":{"$numberInt":"0"},"confidence":{"$numberDouble":"0.9999787419292163"}},
+{"_id":{"$oid":"5b743d4f51195edc1b2e237d"},"speech":"Two hundred mile trip it might take days undefeated along route for whatever reason, even at the map off, you might be stranded. So ","time":{"$numberDouble":"19.003211498260498"},"location":[{"$numberDouble":"-0.8921163506693938"},{"$numberDouble":"0.37223123513056183"},{"$numberDouble":"0.28763088866162995"}],"userID":{"$numberInt":"0"},"confidence":{"$numberDouble":"0.99994379604312"}},
+{"_id":{"$oid":"5b743d4f51195edc1b2e237e"},"speech":"Anything essential to all your own survival is very ","time":{"$numberDouble":"10.375852346420288"},"location":[{"$numberDouble":"-0.8960050481068864"},{"$numberDouble":"0.37000810909576165"},{"$numberDouble":"0.2895267697884335"}],"userID":{"$numberInt":"0"},"confidence":{"$numberInt":"1"}},
+{"_id":{"$oid":"5b743d4f51195edc1b2e237f"},"speech":"Can ride on the back of the house and feed him a water and oxygen and let him walk us ","time":{"$numberDouble":"18.60653066635132"},"location":[{"$numberDouble":"0.8277425551811896"},{"$numberDouble":"0.43757536431603333"},{"$numberDouble":"0.8744865090899833"}],"userID":{"$numberInt":"2"},"confidence":{"$numberInt":"1"}},
+{"_id":{"$oid":"5b743d4f51195edc1b2e2380"},"speech":"Two hundred miles ","time":{"$numberDouble":"5.38838267326355"},"location":[{"$numberDouble":"0.8222784969330804"},{"$numberDouble":"0.42563244082417107"},{"$numberDouble":"0.8627024944405781"}],"userID":{"$numberInt":"2"},"confidence":{"$numberDouble":"0.9999956098227645"}},
+{"_id":{"$oid":"5b743d4f51195edc1b2e2381"},"speech":"Who masks of oxygen? So only two of these people are living, but you know there could be multiple people on the ship. I feel like ","time":{"$numberDouble":"18.576208114624023"},"location":[{"$numberDouble":"-0.7521065736282722"},{"$numberDouble":"0.40454998067884435"},{"$numberDouble":"1.2200459734682072"}],"userID":{"$numberInt":"3"},"confidence":{"$numberInt":"1"}},
+{"_id":{"$oid":"5b743d4f51195edc1b2e2382"},"speech":"This is a serious problem if only two of the crew is get gets to survive. Who you choose, because I would shoot myself. Of course, ","time":{"$numberDouble":"17.353047370910645"},"location":[{"$numberDouble":"-0.751245212959074"},{"$numberDouble":"0.4023102958820041"},{"$numberDouble":"1.2377079652675893"}],"userID":{"$numberInt":"3"},"confidence":{"$numberDouble":"0.9976649437784089"}},
+{"_id":{"$oid":"5b743d4f51195edc1b2e2383"},"speech":"Take the oxygen tank and then light it up with the fire match and then buyers, whoever gets burnt ","time":{"$numberDouble":"19.239359855651855"},"location":[{"$numberDouble":"0.7782127648645759"},{"$numberDouble":"0.40955921319636024"},{"$numberDouble":"0.8708147536234687"}],"userID":{"$numberInt":"2"},"confidence":{"$numberInt":"1"}},
+{"_id":{"$oid":"5b743d4f51195edc1b2e2384"},"speech":"And then there ","time":{"$numberDouble":"4.66061544418335"},"location":[{"$numberDouble":"0.5411205354362935"},{"$numberDouble":"0.39428412625153925"},{"$numberDouble":"0.14512664629975325"}],"userID":{"$numberInt":"1"},"confidence":{"$numberInt":"1"}},
+{"_id":{"$oid":"5b743d4f51195edc1b2e2385"},"speech":"","time":{"$numberDouble":"3.09476900100708"},"location":[{"$numberDouble":"0.7917175065430139"},{"$numberDouble":"0.40520235946674815"},{"$numberDouble":"0.8960821385238087"}],"userID":{"$numberInt":"2"},"confidence":{"$numberDouble":"0.9999948975737266"}},
+{"_id":{"$oid":"5b743d4f51195edc1b2e2386"},"speech":"I ","time":{"$numberDouble":"3.4828755855560303"},"location":[{"$numberDouble":"0.7805377713562504"},{"$numberDouble":"0.4014456447492255"},{"$numberDouble":"0.8688820007453151"}],"userID":{"$numberInt":"2"},"confidence":{"$numberInt":"1"}},
+{"_id":{"$oid":"5b743d4f51195edc1b2e2387"},"speech":"Hey computer, oxen and guessing is compressed to sell ","time":{"$numberDouble":"10.072012901306152"},"location":[{"$numberDouble":"0.5171083725783469"},{"$numberDouble":"0.43212122654351115"},{"$numberDouble":"0.1537968102019185"}],"userID":{"$numberInt":"1"},"confidence":{"$numberInt":"1"}},
+{"_id":{"$oid":"5b743d4f51195edc1b2e2388"},"speech":"Everyone of the it's a explosion, cause accidents, very flammable income plus. Yes, ","time":{"$numberDouble":"19.49835228919983"},"location":[{"$numberDouble":"0.5483590027494549"},{"$numberDouble":"0.41668826717969754"},{"$numberDouble":"0.13864588213372683"}],"userID":{"$numberInt":"1"},"confidence":{"$numberInt":"1"}},
+{"_id":{"$oid":"5b743d4f51195edc1b2e2389"},"speech":"Everyone would die, including you and it's even worse, because it's compressed oxygen so a lot more than there is usually ","time":{"$numberDouble":"19.34518313407898"},"location":[{"$numberDouble":"0.5552019503028517"},{"$numberDouble":"0.4148751161508372"},{"$numberDouble":"0.14026653791259036"}],"userID":{"$numberInt":"1"},"confidence":{"$numberInt":"1"}},
+{"_id":{"$oid":"5b743d4f51195edc1b2e238a"},"speech":"The elevator is a good idea, but I think what I'm guessing accrued, maybe like four and I I'm thinking about ","time":{"$numberDouble":"19.372111082077026"},"location":[{"$numberDouble":"0.5304151859629491"},{"$numberDouble":"0.4048988786092811"},{"$numberDouble":"0.14015882457107806"}],"userID":{"$numberInt":"1"},"confidence":{"$numberInt":"1"}},
+{"_id":{"$oid":"5b743d4f51195edc1b2e238b"},"speech":"For people, so you don't have to like hog the tank the whole time, so we carry it and you share like the breeding mask. ","time":{"$numberDouble":"18.969868898391724"},"location":[{"$numberDouble":"0.5391258882304677"},{"$numberDouble":"0.4167819290923194"},{"$numberDouble":"0.15183348254608162"}],"userID":{"$numberInt":"1"},"confidence":{"$numberInt":"1"}},
+{"_id":{"$oid":"5b743d4f51195edc1b2e238c"},"speech":"And then it's like it's like two two pictures. ","time":{"$numberDouble":"10.194339752197266"},"location":[{"$numberDouble":"0.555678578067887"},{"$numberDouble":"0.4229763939885077"},{"$numberDouble":"0.14196368659116124"}],"userID":{"$numberInt":"1"},"confidence":{"$numberDouble":"0.9999620588095666"}},
+{"_id":{"$oid":"5b743d4f51195edc1b2e238d"},"speech":"I think ","time":{"$numberDouble":"3.9087557792663574"},"location":[{"$numberDouble":"0.5691796301778735"},{"$numberDouble":"0.4234016555885531"},{"$numberDouble":"0.12111028235957687"}],"userID":{"$numberInt":"1"},"confidence":{"$numberInt":"1"}},
+{"_id":{"$oid":"5b743d4f51195edc1b2e238e"},"speech":"Hey but yeah ","time":{"$numberDouble":"3.5193979740142822"},"location":[{"$numberDouble":"0.7697399862041504"},{"$numberDouble":"0.39075225894066956"},{"$numberDouble":"0.8868093209934871"}],"userID":{"$numberInt":"2"},"confidence":{"$numberInt":"1"}},
+{"_id":{"$oid":"5b743d4f51195edc1b2e238f"},"speech":"In we could try to feed the engine with oxygen and tried to light it up and see if the ex ","time":{"$numberDouble":"19.36717700958252"},"location":[{"$numberDouble":"0.7661907598771127"},{"$numberDouble":"0.40768050813143725"},{"$numberDouble":"0.9063501231082369"}],"userID":{"$numberInt":"2"},"confidence":{"$numberInt":"1"}},
+{"_id":{"$oid":"5b743d4f51195edc1b2e2390"},"speech":"Since takes us, I go far yeah just hope for the best ","time":{"$numberDouble":"16.571356534957886"},"location":[{"$numberDouble":"0.7927679741698215"},{"$numberDouble":"0.42075078049536657"},{"$numberDouble":"0.9130931261940805"}],"userID":{"$numberInt":"2"},"confidence":{"$numberDouble":"0.9997377858238515"}},
+{"_id":{"$oid":"5b743d4f51195edc1b2e2391"},"speech":"We are aliens ","time":{"$numberDouble":"5.300718069076538"},"location":[{"$numberDouble":"0.5551599470958125"},{"$numberDouble":"0.40145938073043774"},{"$numberDouble":"0.12907633925499057"}],"userID":{"$numberInt":"1"},"confidence":{"$numberInt":"1"}},
+{"_id":{"$oid":"5b743d4f51195edc1b2e2392"},"speech":"Teens, who don't need oxygen, we're only using oxygen to make his provisions? Maybe ","time":{"$numberDouble":"15.491395235061646"},"location":[{"$numberDouble":"0.7637579896648189"},{"$numberDouble":"0.3957284130037728"},{"$numberDouble":"0.8789987905127898"}],"userID":{"$numberInt":"2"},"confidence":{"$numberInt":"1"}},
+{"_id":{"$oid":"5b743d4f51195edc1b2e2393"},"speech":"The action they live, a moon ","time":{"$numberDouble":"8.17540979385376"},"location":[{"$numberDouble":"0.7901022311284904"},{"$numberDouble":"0.41836925778072914"},{"$numberDouble":"0.9568882081327674"}],"userID":{"$numberInt":"2"},"confidence":{"$numberInt":"1"}},
+{"_id":{"$oid":"5b743d4f51195edc1b2e2394"},"speech":"Well can, but we are since were aliens. We live on the moon and there's other aliens who owns other space. You ","time":{"$numberDouble":"20.001237869262695"},"location":[{"$numberDouble":"0.8057057971033407"},{"$numberDouble":"0.4291412668720286"},{"$numberDouble":"0.9377665204838184"}],"userID":{"$numberInt":"2"},"confidence":{"$numberInt":"1"}},
+{"_id":{"$oid":"5b743d4f51195edc1b2e2395"},"speech":"It'S we just take other people's space ship and ride that space ship to the mother ship and we're not ","time":{"$numberDouble":"20.30541968345642"},"location":[{"$numberDouble":"0.7892354103170628"},{"$numberDouble":"0.41786866144910195"},{"$numberDouble":"0.8915364667209984"}],"userID":{"$numberInt":"2"},"confidence":{"$numberInt":"1"}},
+{"_id":{"$oid":"5b743d4f51195edc1b2e2396"},"speech":"Yeah yeah ","time":{"$numberDouble":"3.370965003967285"},"location":[{"$numberDouble":"0.7947041496920286"},{"$numberDouble":"0.4170280247669491"},{"$numberDouble":"0.8778405846127068"}],"userID":{"$numberInt":"2"},"confidence":{"$numberDouble":"0.9999922972073978"}},
+{"_id":{"$oid":"5b743d4f51195edc1b2e2397"},"speech":"Still be like some something really big and twenty miles is just a foot away to us. Not just take one step into their two hundred move. ","time":{"$numberDouble":"19.689552307128906"},"location":[{"$numberDouble":"0.5553826870023804"},{"$numberDouble":"0.4101149851222152"},{"$numberDouble":"0.197816355705614"}],"userID":{"$numberInt":"1"},"confidence":{"$numberInt":"1"}},
+{"_id":{"$oid":"5b743d4f51195edc1b2e2398"},"speech":"","time":{"$numberDouble":"1.3834710121154785"},"location":[{"$numberDouble":"0.5483426835116095"},{"$numberDouble":"0.4064519701801148"},{"$numberDouble":"0.1739901249348025"}],"userID":{"$numberInt":"1"},"confidence":{"$numberDouble":"0.9999437533028641"}},
+{"_id":{"$oid":"5b743d4f51195edc1b2e2399"},"speech":"","time":{"$numberDouble":"3.769228935241699"},"location":[{"$numberDouble":"0.5191407592590744"},{"$numberDouble":"0.39361022384756633"},{"$numberDouble":"0.043741620504120615"}],"userID":{"$numberInt":"1"},"confidence":{"$numberInt":"1"}},
+{"_id":{"$oid":"5b743d4f51195edc1b2e239a"},"speech":"So system ","time":{"$numberDouble":"6.022605895996094"},"location":[{"$numberDouble":"0.5147882119997698"},{"$numberDouble":"0.38882793512307995"},{"$numberDouble":"0.043832918316918185"}],"userID":{"$numberInt":"1"},"confidence":{"$numberInt":"1"}},
+{"_id":{"$oid":"5b743d4f51195edc1b2e239b"},"speech":"The words and then to it ","time":{"$numberDouble":"6.83334493637085"},"location":[{"$numberDouble":"-0.9002613624110553"},{"$numberDouble":"0.3663807833593795"},{"$numberDouble":"0.22077218071567511"}],"userID":{"$numberInt":"0"},"confidence":{"$numberInt":"1"}},
+{"_id":{"$oid":"5b743d4f51195edc1b2e239c"},"speech":"That'S the time frame to the tying will we get to the mother ship elsewhere there, but ","time":{"$numberDouble":"19.613615036010742"},"location":[{"$numberDouble":"0.7377150240430188"},{"$numberDouble":"0.38024503812011684"},{"$numberDouble":"0.9177878262813459"}],"userID":{"$numberInt":"2"},"confidence":{"$numberInt":"1"}},
+{"_id":{"$oid":"5b743d4f51195edc1b2e239d"},"speech":"Just jump to that time wait I, I think ","time":{"$numberDouble":"7.767571449279785"},"location":[{"$numberDouble":"0.753552387665569"},{"$numberDouble":"0.38720411794172516"},{"$numberDouble":"0.8762437302077922"}],"userID":{"$numberInt":"2"},"confidence":{"$numberInt":"1"}},
+{"_id":{"$oid":"5b743d4f51195edc1b2e239e"},"speech":"Two time dimensions: making the fifth dimension: ","time":{"$numberDouble":"8.245033264160156"},"location":[{"$numberDouble":"0.6381811602931654"},{"$numberDouble":"0.4221678384733806"},{"$numberDouble":"0.041327043535993674"}],"userID":{"$numberInt":"1"},"confidence":{"$numberInt":"1"}},
+{"_id":{"$oid":"5b743d4f51195edc1b2e239f"},"speech":"And the mother ship ","time":{"$numberDouble":"3.580186367034912"},"location":[{"$numberDouble":"0.614048112267719"},{"$numberDouble":"0.422271877820418"},{"$numberDouble":"0.0848585466191337"}],"userID":{"$numberInt":"1"},"confidence":{"$numberInt":"1"}},
+{"_id":{"$oid":"5b743d4f51195edc1b2e23a0"},"speech":"I was sleeping on the mothership, pretending we were on the broken ship. ","time":{"$numberDouble":"15.026551246643066"},"location":[{"$numberDouble":"0.7554587108932712"},{"$numberDouble":"0.40172653016601867"},{"$numberDouble":"0.9403549013566945"}],"userID":{"$numberInt":"2"},"confidence":{"$numberInt":"1"}},
+{"_id":{"$oid":"5b743d4f51195edc1b2e23a1"},"speech":"How can earn, how can mers be real if our eyes aren't real ","time":{"$numberDouble":"18.215375185012817"},"location":[{"$numberDouble":"-0.6742089332101548"},{"$numberDouble":"0.38451954491016715"},{"$numberDouble":"1.2739973084632101"}],"userID":{"$numberInt":"3"},"confidence":{"$numberInt":"1"}},
+{"_id":{"$oid":"5b743d4f51195edc1b2e23a2"},"speech":"Thank ","time":{"$numberDouble":"5.125026702880859"},"location":[{"$numberDouble":"-0.42045432391297516"},{"$numberDouble":"0.442548272601153"},{"$numberDouble":"1.2003315900750327"}],"userID":{"$numberInt":"3"},"confidence":{"$numberInt":"1"}},
+{"_id":{"$oid":"5b743d4f51195edc1b2e23a3"},"speech":"Bad ","time":{"$numberDouble":"6.8440985679626465"},"location":[{"$numberDouble":"-0.38629658886965756"},{"$numberDouble":"0.4524379864284472"},{"$numberDouble":"1.1768168865527504"}],"userID":{"$numberInt":"3"},"confidence":{"$numberInt":"1"}},
+{"_id":{"$oid":"5b743d4f51195edc1b2e23a4"},"speech":"She ","time":{"$numberDouble":"9.444067478179932"},"location":[{"$numberDouble":"-0.3992025116339379"},{"$numberDouble":"0.4466029295386689"},{"$numberDouble":"1.1476675816009205"}],"userID":{"$numberInt":"3"},"confidence":{"$numberInt":"1"}},
+{"_id":{"$oid":"5b743d4f51195edc1b2e23a5"},"speech":"It was a good like this ","time":{"$numberDouble":"5.7318689823150635"},"location":[{"$numberDouble":"0.8034185299396169"},{"$numberDouble":"0.4208594614226212"},{"$numberDouble":"0.9205733892327483"}],"userID":{"$numberInt":"2"},"confidence":{"$numberInt":"1"}},
+{"_id":{"$oid":"5b743d4f51195edc1b2e23a6"},"speech":"This isn't a ","time":{"$numberDouble":"5.729516267776489"},"location":[{"$numberDouble":"-0.9554630570323223"},{"$numberDouble":"0.3542056453449709"},{"$numberDouble":"0.39233538721778716"}],"userID":{"$numberInt":"0"},"confidence":{"$numberInt":"1"}},
+{"_id":{"$oid":"5b743d4f51195edc1b2e23a7"},"speech":"You guys hit right on them all yeah yeah ","time":{"$numberDouble":"5.9188148975372314"},"location":[{"$numberDouble":"-0.7283792636148654"},{"$numberDouble":"0.38860297163510127"},{"$numberDouble":"1.1570437510032971"}],"userID":{"$numberInt":"3"},"confidence":{"$numberInt":"1"}},
+{"_id":{"$oid":"5b743d4f51195edc1b2e23a8"},"speech":"Question mark I like the menu each point at the ","time":{"$numberDouble":"14.184780836105347"},"location":[{"$numberDouble":"-0.7267221646445959"},{"$numberDouble":"0.3988682317200431"},{"$numberDouble":"1.1479341122975777"}],"userID":{"$numberInt":"3"},"confidence":{"$numberInt":"1"}},
+{"_id":{"$oid":"5b743d4f51195edc1b2e23a9"},"speech":"That we have more information in ways we can like cut into three five minutes on the last information. ","time":{"$numberDouble":"11.951601028442383"},"location":[{"$numberDouble":"-0.5898946998710365"},{"$numberDouble":"0.33376121138123427"},{"$numberDouble":"1.1165581702350853"}],"userID":{"$numberInt":"3"},"confidence":{"$numberInt":"1"}},
+{"_id":{"$oid":"5b743d4f51195edc1b2e23aa"},"speech":"I'M talking about aliens, we concluded that it ","time":{"$numberDouble":"5.256896018981934"},"location":[{"$numberDouble":"-0.6643083824417242"},{"$numberDouble":"0.3872850103801908"},{"$numberDouble":"1.243782814178448"}],"userID":{"$numberInt":"3"},"confidence":{"$numberInt":"1"}},
+{"_id":{"$oid":"5b743d4f51195edc1b2e23ab"},"speech":"All the dream - and we just had to wait because of the yeah yeah - we were coming up with murder stories. ","time":{"$numberDouble":"13.642085790634155"},"location":[{"$numberDouble":"0.5767293008011521"},{"$numberDouble":"0.40918449936896417"},{"$numberDouble":"0.04096322778576206"}],"userID":{"$numberInt":"1"},"confidence":{"$numberInt":"1"}},
+{"_id":{"$oid":"5b743d4f51195edc1b2e23ac"},"speech":"Dozens and probably for people of the on the crew, we had to kill two people, because that was the only option because there were two of them had to die. Yeah there's only ","time":{"$numberDouble":"21.29180598258972"},"location":[{"$numberDouble":"-0.6567465045780424"},{"$numberDouble":"0.39732986261171693"},{"$numberDouble":"1.2429799545377263"}],"userID":{"$numberInt":"3"},"confidence":{"$numberInt":"1"}},
+{"_id":{"$oid":"5b743d4f51195edc1b2e23ad"},"speech":"Two oxygen deadlines and ","time":{"$numberDouble":"5.255778551101685"},"location":[{"$numberDouble":"-0.6066780956344033"},{"$numberDouble":"0.3382501239558889"},{"$numberDouble":"1.087134786564685"}],"userID":{"$numberInt":"3"},"confidence":{"$numberDouble":"0.9996528562195115"}},
+{"_id":{"$oid":"5b743d4f51195edc1b2e23ae"},"speech":"When we start talking about, murder, may take sometime to ","time":{"$numberDouble":"8.951186656951904"},"location":[{"$numberDouble":"-0.6764858504239535"},{"$numberDouble":"0.3736944287407864"},{"$numberDouble":"1.1537733242342527"}],"userID":{"$numberInt":"3"},"confidence":{"$numberInt":"1"}},
+{"_id":{"$oid":"5b743d4f51195edc1b2e23af"},"speech":"In places like they do, we ","time":{"$numberDouble":"3.962035655975342"},"location":[{"$numberDouble":"-0.8936417828795427"},{"$numberDouble":"0.3781999985278736"},{"$numberDouble":"0.23493814473081348"}],"userID":{"$numberInt":"0"},"confidence":{"$numberInt":"1"}},
+{"_id":{"$oid":"5b743d4f51195edc1b2e23b0"},"speech":"Yeah desert him know that ","time":{"$numberDouble":"3.6289241313934326"},"location":[{"$numberDouble":"-0.5870012302720985"},{"$numberDouble":"0.3265695062896005"},{"$numberDouble":"1.105148966488915"}],"userID":{"$numberInt":"3"},"confidence":{"$numberInt":"1"}},
+{"_id":{"$oid":"5b743d4f51195edc1b2e23b1"},"speech":"The dragons are, did drag ","time":{"$numberDouble":"9.754640579223633"},"location":[{"$numberDouble":"-0.6860585927821679"},{"$numberDouble":"0.38115122068225943"},{"$numberDouble":"1.159405356597827"}],"userID":{"$numberInt":"3"},"confidence":{"$numberInt":"1"}},
+{"_id":{"$oid":"5b743d4f51195edc1b2e23b2"},"speech":"Needs that that, to our thinking as well, see you guys later ","time":{"$numberDouble":"21.64819884300232"},"location":[{"$numberDouble":"-0.6838019422065383"},{"$numberDouble":"0.3643144212062914"},{"$numberDouble":"1.0909435325131158"}],"userID":{"$numberInt":"3"},"confidence":{"$numberInt":"1"}},
+{"_id":{"$oid":"5b743d4f51195edc1b2e23b3"},"speech":"","time":{"$numberDouble":"1.6300277709960938"},"location":[{"$numberDouble":"-0.8228601628697743"},{"$numberDouble":"0.3732251817466805"},{"$numberDouble":"0.254026447385022"}],"userID":{"$numberInt":"0"},"confidence":{"$numberInt":"1"}}]
+
+
+      
+var test_data = [];
+var nn = 0;
+
+for(var i = 0; i < speech_data.length; i++)
+{
+
+if(speech_data[i].time.$numberDouble < 0 || speech_data[i].speech == "")
+{
+    continue;
+    
+}
+
+  var ra = Math.floor(Math.random()*4);
+  
+  if(ra == speech_data[i].userID.$numberInt)
+  {
+    if(ra == 0)
+    {
+    ra++;
+    }
+    else if(ra == 3)
+    {
+    ra--;
+    }
+    else
+    {
+    ra++;
+    }
+  }
+  
+test_data[nn++] = { speech: speech_data[i].speech, userID:parseInt(speech_data[i].userID.$numberInt) , time:parseInt(speech_data[i].time.$numberDouble), look:ra };
+
+
+}
+    
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+        var width = 770;
+        var height = 940;
+        var diameter = 760;
+        // controls the number of nodes
+        // will read from Json file
+        var participantSpeak = [];
+        var participantS = []
+        var participantTime = [];
+        var timeSpoken = test_data.map(tra => tra.time);
+        var userID_test = test_data.map(tra => tra.userID);
+        var looks = test_data.map(tra => tra.look);
+        var numParticipants = Math.max(...userID_test) + 1;
+        
+        var contsignal = true;
+        var scale_arr = [];
+        var scale_factor = 0.89;
+        var activate_overlap_detection = true;
+        var all_angles=[];
+        var rad_boost = 100;
+      
+        var currentSpeaker = [];
+        var previousSpeaker = [];
+        var global_time = 0;
+        
+        // Although we can determine the number of times someone spoke from the test data we have, we are assuming that we will be using live data in the end, hence also assuming that we don't have that information at this point
+        
+        // var common_scale = d3.scaleQuantize().domain([0, 50]).range(['white','blue']);
+        var k, i;
+        for(k = 0; k < numParticipants; k++){
+            participantSpeak[k] = 0;
+            participantTime[k] = 0;
+            participantS[k] = 0;
+        }
+        // array of circles
+        var circleData = [];
+
+        var tooltip = d3.select("body")
+                        .append("div")
+                        .style("position", "absolute")
+                        .style("z-index", "10")
+                        .style("visibility", "hidden")
+                        .style("color", "white")
+                        .style("padding", "8px")
+                        .style("background-color", "rgba(0, 0, 0, 0.50)")
+                        .style("border-radius", "6px")
+                        .style("font", "12px sans-serif")
+                        .text("tooltip");
+
+        var timer_var1 = [],timer_var2 = [];
+        var timer_rets1 = [], timer_rets2 = [];
+        var silent_idx = [];
+        var timer_count = 0;
+        var timer_rets_count = 0;
+      
+        var itr = 0;
+        var alpha = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"];
+        //http://bl.ocks.org/jfreyre/b1882159636cc9e1283a
+      
+        // controls radius of circle the nodes are around
+        var radius = 25;
+        var radius2 = 150;
+        // creates container that the nodes are in with specific attributes
+        var svgContainer = d3.select("body")
+                            .append("svg")
+                            .attr("width", 750)
+                            .attr("height", 750)
+                            .style("border", "1px solid black");
+      
+        var userID_vals = [];
+        var ui = 0;
+        var step_value = 1;
+        var final_pad = 10;
+        var total_time_num = parseInt(timeSpoken.reduce(reduction));
+        var time_values = [],ui, time_acc = [],labels = [];
+        for(ui = 0; ui <= total_time_num + final_pad; ui++) {time_values[ui] = ui}; 
+        time_acc = timeSpoken.slice();    // time scale
+        for(ui = 1; ui < timeSpoken.length; ui++) {time_acc[ui] = time_acc[ui-1] + time_acc[ui]};      //
+        for(ui = 0; ui < total_time_num; ui++) {labels[ui] = search_list(time_acc,ui);}; 
+        for(ui = 0; ui < total_time_num; ui++){userID_vals[ui] = userID_test[labels[ui]];}
+        var max_times_spoken = 0;
+        var min_times_spoken = Infinity;
+        var min_speaker = 0;
+        var meeting_ind = 0;
+        var stat_dur = -1;
+        var first_time = [];
+        var zonda = [];
+        var linepad = 10;
+      
+        for(ui = 0; ui < total_time_num; ui++){zonda[ui] = [];}
+      
+        for(var iii = 0; iii < numParticipants; iii++  )
+        { 
+        first_time.push(0);
+        var temp_spoken = get_t_upto_curr_time(total_time_num-1,iii);   
+        if(max_times_spoken < temp_spoken)
+        {max_times_spoken = temp_spoken;}
+
+        if(min_times_spoken > temp_spoken )
+        {
+        min_speaker = iii;
+        min_times_spoken = temp_spoken;
+        }
+        }
+        var colors = d3.scaleLinear().domain([1,max_times_spoken+(max_times_spoken*0.25)])
+                            .interpolate(d3.interpolateHcl)
+                            .range([d3.rgb("#FFFFFF"), d3.color("#0000FF")]);
+
+      
+        //for(ui = 0; ui < total_time_num; ui++ ) {uid_labels[ui] = }
+      
+        var rad_mat = math.zeros(numParticipants,time_values.length),color_mat = math.zeros(numParticipants,time_values.length), curr_mat = math.zeros(numParticipants,time_values.length),prev_mat = math.zeros(numParticipants,time_values.length);
+        var arrow_mat = math.zeros(numParticipants,numParticipants,total_time_num);
+        var arrow_track = math.zeros(numParticipants,numParticipants);
+        var arrow_scale = [];
+            
+        get_curr_speaking();
+        initial_draw(svgContainer,numParticipants,circleData);
+
+      var dict_angles=[];
+      for(var i=0;i<all_angles.length;i++){dict_angles.push({key: alpha[i],value: all_angles[i]});}
+      
+        generate_data(100); 
+      
+        var mxval = 5;
+        var mnval = 0.8;
+        var vals = math.max(arrow_mat);
+        var step = (mxval - mnval) / (vals);
+        
+      for(var z = 0; z < vals+1; z++)
+      {
+      arrow_scale.push( mnval + z*step);
+      }
+
+        var timeline = d3.sliderHorizontal()
+          .min(0)
+          .max(total_time_num + final_pad - 1)
+          .step(1)
+          .width(1100)
+          .on('onchange', slider_value => {
+            print_all_figures(slider_value);
+          });
+
+        var g = d3.select("div#time_line").append("svg")
+          .attr("width", 1200)
+          .attr("height", 100)
+          .append("g")
+          .attr("transform", "translate(50,50)");
+
+        g.call(timeline);
+//        print_all_figures(100);
+      
+        //currently(0,timeSpoken[0],100,parseInt(circleData[0].attr("r")));
+        // currently(i,timesec,ret,rad); 
+        // start infinite loop here to update display over and over again
+    
+      function get_line_coords(i,j)
+      {
+      
+      var xm,ym,xm1,ym1,xm2,ym2;
+      xm = (parseFloat(circleData[i].attr("cx")) + parseFloat(circleData[j].attr("cx")))/2;
+      ym = (parseFloat(circleData[i].attr("cy")) + parseFloat(circleData[j].attr("cy")))/2;
+      xm1 = (xm + parseFloat(circleData[i].attr("cx")))/2;  
+      ym1 = (ym + parseFloat(circleData[i].attr("cy")))/2;
+      xm2 = (xm + parseFloat(circleData[j].attr("cx")))/2;  
+      ym2 = (ym + parseFloat(circleData[j].attr("cy")))/2;
+      
+      var m = (ym2 - ym1) / (xm2 - xm1);
+      var x1,y1,x2,y2,x3,y3,x4,y4;
+        
+      if(m == -1)
+      {
+      
+      x1 = xm1 + linepad;
+      x2 = xm2 + linepad;
+      y1  = ym1 + linepad; 
+      y2  = ym2 + linepad; 
+      
+      x3 = xm1 - linepad;  
+      x4 = xm2 - linepad;
+      y3 = ym1 - linepad;
+      y4 = ym2 - linepad;
+      }
+        else if(m == Infinity || m == -Infinity)
+        {
+      x1 = xm1 + linepad;
+      x2 = xm2 + linepad;
+      y1  = ym1; 
+      y2  = ym2; 
+      
+      x3 = xm1 - linepad;  
+      x4 = xm2 - linepad;
+      y3 = ym1;
+      y4 = ym2;
+        }
+        else if(m == 1)
+        {
+      x1 = xm1 - linepad;
+      x2 = xm2 - linepad;
+      y1  = ym1 + linepad; 
+      y2  = ym2 + linepad; 
+      
+      x3 = xm1 + linepad;  
+      x4 = xm2 + linepad;
+      y3 = ym1 - linepad;
+      y4 = ym2 - linepad;
+        }
+        else if(m == 0)
+        {
+      x1 = xm1;
+      x2 = xm2 ;
+      y1  = ym1 +linepad; 
+      y2  = ym2 +linepad; 
+      
+      x3 = xm1;  
+      x4 = xm2;
+      y3 = ym1 -linepad;
+      y4 = ym2 -linepad;
+        }
+        else
+        {
+        alert("ERROR");
+        }
+        
+        return [x1,y1,x2,y2,x3,y3,x4,y4];
+        
+      }
+      
+      function draw_line(i,j,width)
+      {
+      var xm,ym,xm1,ym1,xm2,ym2;
+      xm = (parseFloat(circleData[i].attr("cx")) + parseFloat(circleData[j].attr("cx")))/2;
+      ym = (parseFloat(circleData[i].attr("cy")) + parseFloat(circleData[j].attr("cy")))/2;
+      xm1 = (xm + parseFloat(circleData[i].attr("cx")))/2;  
+      ym1 = (ym + parseFloat(circleData[i].attr("cy")))/2;
+      xm2 = (xm + parseFloat(circleData[j].attr("cx")))/2;  
+      ym2 = (ym + parseFloat(circleData[j].attr("cy")))/2;
+        
+        
+      var line = svgContainer.append("line")
+     .attr("x1",xm1)
+     .attr("y1",ym1)  
+     .attr("x2",xm2) 
+     .attr("y2",ym2)  
+     .attr("id","connec_line")
+     .attr("stroke","red")
+     .attr("stroke-width",arrow_scale[width])  
+     .attr("marker-end","url(#arrow)");      
+      }
+      
+      function remove_line()
+      {
+      svgContainer.selectAll("#connec_line").remove();
+      }
+      
+      function generate_data(ret)    // generate data
+      {
+      
+        var k,t,ity;
+        
+      for(t = 0; t < total_time_num; t++)  
+      {
+        var curr_sec = search_list(time_acc,t);
+            if(t > timeSpoken[0]-1)
+            {
+               prev_mat.subset(math.index(userID_test[curr_sec - 1],t),1);  // previous speaker for that instant} 
+            }
+        
+            curr_mat.subset(math.index(userID_test[labels[t]],t),1);
+        //  }
+           // curr_mat[test_data[labels[t]].userID][t] = 1;
+      
+        // if(arrow_track.subset(math.index(userID_test[curr_sec],looks[curr_sec])) == 0)
+        // {
+        // arrow_mat.subset(math.index(userID_test[curr_sec],looks[curr_sec],t),1);
+        // arrow_track.subset(math.index(userID_test[curr_sec],looks[curr_sec]),1);
+        // }
+        // else
+        //    {
+             
+           var tt = 0, ll = 0;
+           var siz = arrow_mat.size();
+           for(var T = t; T < siz[2] ; T++)
+            {
+            tt = arrow_mat.subset(math.index(userID_test[curr_sec],looks[curr_sec],T)) + 1;
+            arrow_mat.subset(math.index(userID_test[curr_sec],looks[curr_sec],T),tt);
+         
+            }
+             
+  //    }
+        for(k = 0; k < numParticipants; k++)
+            {  
+             rad_mat.subset(math.index(k,t),(radius + 1*(ret*(get_sp_upto_curr_time(t,k)/60))));
+            //rad_mat.subset(math.index(userID_test[labels[t]],t),(radius + 1*(ret*(get_sp_upto_curr_time(t,userID_test[labels[t]])/60))));
+            // rad_mat[test_data[labels[t]].userID][t] = radius + 1*(ret*(t/60));
+             color_mat.subset(math.index(k,t),colors(get_t_upto_curr_time(t,k)));
+            // color_mat.subset(math.index(userID_test[labels[t]],t),colors(search_for_instances(time_acc,t,userID_test[labels[t]]))); 
+            // color_mat[test_data[labels[t]].userID][t] = color(search_for_instances(time_acc,t,test_data[labels[t]].userID));     
+        }
+      } 
+       
+        if(activate_overlap_detection)
+           {
+        
+        for(t = 0; t < total_time_num; t++)
+          {
+        for(var i = 0; i < numParticipants; i++)
+          {
+            for(var j = 0; j < numParticipants; j++)
+            {
+              if(i == j)
+              {continue;}
+              
+             if( (rad_mat.subset(math.index(i,t)) + rad_mat.subset(math.index(j,t))) > dist_calc(i,j) ) // overlap!
+             {
+             update_scale(t);
+             }
+            }      
+          }
+        }
+      }
+      }
+
+      function print_all_figures(t)
+      {
+       // remove_line();
+        global_time = t;
+
+          svgContainer.selectAll("circle")  
+            .on("mouseover", function(d,id) {
+                                    return tooltip.text("Times Spoken: " + parseInt(get_sp_upto_curr_time(t,id)) + " Total Time: "  + parseInt(get_t_upto_curr_time(t, id)))
+                                                .style("visibility", "visible");
+                                })
+                                .on("mousemove", function() {
+                                    return tooltip.style("top", (d3.event.pageY-10)+"px")
+                                                .style("left",(d3.event.pageX+10)+"px");
+                                })
+                                .on("mouseout", function() {
+                                    return tooltip.style("visibility", "hidden");
+                                });
+
+          svgContainer.selectAll("text")
+            .on("mouseover", function(d,id) {
+                                    return tooltip.text("Times Spoken: " + parseInt(get_sp_upto_curr_time(t,id)) + " Total Time: "  + parseInt(get_t_upto_curr_time(t, id)))
+                                                .style("visibility", "visible");
+                                })
+                                .on("mousemove", function() {
+                                    return tooltip.style("top", (d3.event.pageY-10)+"px")
+                                                .style("left",(d3.event.pageX+10)+"px");
+                                })
+                                .on("mouseout", function() {
+                                    return tooltip.style("visibility", "hidden");
+                                });
+      
+        
+        if(t >= total_time_num-1)
+        {
+          previously_remove();
+          var ud = userID_test[userID_test.length - 1];
+          
+          for(var o = 0; o < numParticipants; o++)
+          {
+          if(o != ud)
+          {
+          circleData[o].style("stroke", "black")
+                      .style("stroke-width","3px");
+          }
+          }
+          
+          circleData[ud].style("stroke", "lightpink")
+                        .style("stroke-width", "3px");
+        var imp_info = format_text(svgContainer,test_data[test_data.length-1].speech,dict_angles,ud,radius+rad_boost);
+         
+        }
+        
+        else
+        {
+            
+          if(t == 0)
+          {
+          previously_remove();
+            
+            for(var u = 0; u < numParticipants;u++)
+                {
+                  circleData[u].style("stroke","black");
+            }            
+                     
+          }
+        
+        if(t > meeting_ind && t < (meeting_ind+stat_dur))
+        {
+          
+          if(zonda[t].length == 0)
+          {
+
+          calc_spoken_stats(t);
+          
+            for(var u = 0; u < zonda[t].length;u++)
+                {
+                  circleData[zonda[t][u]].style("fill","orange");
+                  //.transition()
+                  
+                  // .duration(200);
+            }
+          }
+          
+         for(var b = 0; b < numParticipants; b++)
+          {
+            if(!zonda[t].includes(b))
+            {
+
+              circleData[b].style("fill",color_mat.subset(math.index(b,t)));
+                //.transition()
+                
+                //.duration(100);
+              
+            }
+          }
+          
+            for(var u = 0; u < zonda[t].length;u++)
+            {
+                  circleData[zonda[t][u]].style("fill","orange");
+                    //.transition()
+                    
+              //.duration(100);
+            }
+
+            
+        }
+        else
+        {
+          for(var b = 0; b < numParticipants; b++)
+          {
+              circleData[b].style("fill",color_mat.subset(math.index(b,t)));
+              
+          }
+        }
+        
+
+        for(var h = 0; h < numParticipants; h++)
+        {
+          if( ((t > meeting_ind) && t < (meeting_ind+stat_dur)) && (!zonda[t].includes(h)) )
+          {
+            update_color_radius(color_mat.subset(math.index(h,t)),rad_mat.subset(math.index(h,t)),h);
+          }
+    
+          for(var k = 0; k < numParticipants; k++)
+          {
+            
+            if(h == k)
+            {
+            continue;
+            }
+            
+          d3.select("#line"+String(h)+String(k)).attr("stroke-width",arrow_scale[ arrow_mat.subset(math.index(h,k,t)) ]);
+          }
+          
+          if(curr_mat.subset(math.index(h,t)) == 1 && (t!=0) && (t < total_time_num - 1))
+          {
+          currently(h,t);
+          }
+          
+          if(prev_mat.subset(math.index(h,t)) == 1)
+          {
+          previously(h,t);        
+          }
+          
+          if( !(curr_mat.subset(math.index(h,t)) == 1 && (t!=0) && (t < total_time_num - 1)) && !(prev_mat.subset(math.index(h,t)) == 1) )
+          {
+          not_currently_previous(h);
+          }
+          
+        }
+          
+        }
+      
+      }
+            
+      function initial_draw(svgContainer,numParticipants,circleData)
+        {
+        
+                // loops through for each participant and creates a node
+        // and evenly spaces the nodes around the circle
+        // in the future will use location data from Json to place people (Will need to generate relative coordinates in 2D unless the visualization is done in 3D)
+        // also need to attach ID to each node
+        for(i = 0; i < numParticipants; i++) 
+        {
+            // formula from here http://bl.ocks.org/bycoffe/3404776
+            var angle = 0;
+            var x = 0;
+            var x_1 = [];
+            var y = 0;
+            var y_1 = [];
+            angle = (i / (numParticipants/2)) * Math.PI;
+            all_angles.push(angle);
+            x = (radius2 * Math.cos(angle)) + (width/2);
+            y = (radius2 * Math.sin(angle)) + (width/2);
+			      x_1.push( ((radius2+8) * Math.cos(angle)) + (width/2) );
+            y_1.push( ((radius2+8) * Math.sin(angle)) + (width/2) );
+            var circle = svgContainer.append("circle")
+                                .attr("cx", x)
+                                .attr("cy", y)
+                                .attr("r", 25)
+                                .attr("id", i)
+                                .style("stroke", "black")
+                                .style("stroke-width","3px")
+                                .style("fill",colors(0))
+                                .style("padding", 2)
+                                .on("mouseover", function() {
+                                    return tooltip.text("Times Spoken: " + 0 + " Total Time: "  + 0).style("visibility", "visible");
+                                })
+                                .on("mousemove", function() {
+                                    return tooltip.style("top", (d3.event.pageY-10)+"px")
+                                                .style("left",(d3.event.pageX+10)+"px");
+                                })
+                                .on("mouseout", function() {
+                                    return tooltip.style("visibility", "hidden");
+                                });
+            
+            circleData.push(circle);
+
+            var id = parseInt(circleData[i].attr("id"));
+
+            var text = svgContainer.append("text")
+                                .attr("x", x)
+                                .attr("y", y + 6)
+                                .text(alpha[id])
+                                .attr("id",i.toString())
+                                .attr("font-family", "san-serif")
+                                .attr("font-size", "20px")
+                                .attr("fill", "black")
+                                .attr("text-anchor", "middle")
+                                .on("mouseover", function() {
+                                    return tooltip.text("Times Spoken: " + 0 + " Total Time: "  + 0).style("visibility", "visible");
+                                })
+                                .on("mousemove", function() {
+                                    return tooltip.style("top", (d3.event.pageY-10)+"px")
+                                                .style("left",(d3.event.pageX+10)+"px");
+                                })
+                                .on("mouseout", function() {
+                                    return tooltip.style("visibility", "hidden");
+                                });;
+          
+                   
+        }
+
+          
+          for(var i = 0; i < numParticipants; i++)
+          {
+           for(var j = 0; j < numParticipants; j++)
+          {
+            if(i == j)
+            {
+            continue;
+            }
+            var lc = get_line_coords(i,j);
+
+            var line = svgContainer.append("line")
+           .attr("x1",lc[0])
+           .attr("y1",lc[1])
+           .attr("x2",lc[2])
+           .attr("y2",lc[3])
+           .attr("id","line"+String(i)+String(j))
+           .attr("stroke","black")
+           .attr("stroke-width",mnval)  
+           .attr("marker-end","url(#arrow)");     
+            
+            
+            var line2 = svgContainer.append("line")
+           .attr("x1",lc[6])
+           .attr("y1",lc[7])
+           .attr("x2",lc[4])
+           .attr("y2",lc[5])
+           .attr("id","line"+String(j)+String(i))
+           .attr("stroke","black")
+           .attr("stroke-width",mnval)  
+           .attr("marker-end","url(#arrow)");     
+          
+          }
+
+          }
+          
+        }
+                            
+        // function will be passed the id of the person currently speaking
+        // and highlight them
+        
+      function search_list(lis,ele)        // searches for which sector the time instant belongs to (the sectors are divided by the conversation snippets)
+      {
+        var i;
+        
+        if(ele < lis[0])
+        {
+        return 0;
+        }
+        
+        for(i = 1; i < lis.length; i++)
+        {
+        
+          if(lis[i-1] <= ele && lis[i] > ele )
+          {
+          return i;
+          }
+          
+        }
+         
+        if(ele >= lis[lis.length - 1])
+        {
+        return lis.length - 1;
+        }
+      }
+      
+      function search_for_instances(lis,tim,userID)                // how many instances of userID before time tim?
+      {
+      var i; 
+      var cnt = 0; 
+        if(tim < test_data[0].time && userID == userID_test[0] )
+        {
+        cnt++; 
+        }
+      
+        for(i = 0; i < lis.length; i++ )
+         {
+          if(lis[i] <= tim)
+          {
+            if(userID_test[i] == userID)
+            {
+            cnt++;
+            }
+          }
+           else if(lis[lis.length-1]== tim)
+           {
+           break;
+           }
+           else
+           {
+           break;
+           }
+        }
+        
+        
+        return cnt;
+      }
+      
+      function get_curr_speaking()
+      {
+      var i,p;
+        
+        for (i = 0; i < numParticipants; i++)
+        {
+          for(p = 0; p < test_data.length; p++)
+              {
+                
+              if(userID_test[p] == i) 
+              {
+                 participantSpeak[i]++;
+              }
+                
+              }
+        }
+        
+      }
+      
+      function get_sp_upto_curr_time(t,UID)                        // Get instances of when a person speaks
+      {                                                            // by looking at the data
+      var i,p;
+        var tot_count = 0;
+        
+          for(p = 0; time_acc[p] <= t ; p++)
+              {
+                
+              if(userID_test[p] == UID) 
+              {
+                tot_count++;                                        // The total count here is of the test_data points and not the sampled time points
+              }
+                
+              }
+        return tot_count;
+      }
+      
+      function get_t_upto_curr_time(t,UID)                        // Get instances of when a person speaks
+      {                                                            // by looking at the data
+      var i,p;
+        var tot_count = 0;
+        
+        if(t == total_time_num)
+        {
+        t--;
+        }
+        
+          for(p = 0; p <= t ; p++)
+              {
+                
+              if(userID_vals[p] == UID) 
+              {
+                tot_count++;                                        // The total count here is of the test_data points and not the sampled time points
+              }
+                
+              }
+        return tot_count;
+      }
+      
+        function currently(i,t) 
+      {  
+        circleData[i].style("stroke","red")
+        .style("stroke-width", "3px");
+        
+        // var cs = search_list(time_acc,t);
+        // if(arrow_mat.subset(math.index(i,looks[cs],t)))
+        // {
+        // d3.select("#line"+String(i)+String(looks[cs])).attr("stroke-width",arrow_scale[ arrow_mat.subset(math.index(i,looks[cs],t)) ])
+        // //draw_line(i,looks[cs],arrow_mat.subset(math.index(i,looks[cs],t)));
+        // }
+        
+      }
+        
+      function not_currently_previous(i)
+      {
+      circleData[i]
+        .style("stroke","black")
+        .style("stroke-width","3px");
+      }
+      
+      
+      function update_color_radius(colo,newrad,i)
+      {
+           circleData[i]
+            .style("fill",colo);
+            //.attr("r",newrad); 
+      }
+      
+        // function will be passed the id of the person who
+        // just spoke and highlight them
+        // will also darken the color of the circle by 1 shade
+        
+        // Anyone who may have spoken previously will have their transcript 
+        // displayed next to them in a text box
+        
+        function previously(i,t) // ,sti) 
+        {
+
+          previously_remove();
+          
+          circleData[i].style("stroke", "lightpink")
+                        .style("stroke-width", "3px");
+                // data[i].style("fill", colors[5]);
+               
+       //        var ls = sti.length;
+       // TODO: After succesfully obtaining transcript data, get character count
+       // and determine width of the rectangle on basis of that
+       // Center text on rectangle
+          
+//           var x_r = parseInt(circleData[i].attr("cx"));
+//           var y_r = parseInt(circleData[i].attr("cy"));
+               
+//                 console.log(t)
+//                 var multi_lines=format_text(svgContainer,test_data[search_list(time_acc,t)-1].speech,25,parseInt(x_r) + 35,parseInt(y_r) + 50);
+
+//                   svgContainer.append("rect")
+//                   .attr("x", parseInt(x_r) + 30)
+//                   .attr("y", parseInt(y_r) + 30)
+//                   .attr("rx",10)
+//                   .attr("ry",10)
+//                   .attr("id","rect_box")
+//                   .attr("width", 180)
+//                   .attr("height", 30+15*(multi_lines-1))
+//                   .attr("stroke","black")
+//                   .attr("fill","none")
+//                   .attr("id","rect_box")
+//                   .attr("border", "1px solid black");
+
+          var imp_info = format_text(svgContainer,test_data[search_list(time_acc,t)-1].speech,dict_angles,i,radius+rad_boost);
+          
+//                 svgContainer.append("text")
+//                 .attr("x",parseInt(x_r) + 35)
+//                 .attr("y",parseInt(y_r) + 50)
+//                 //.style("font-size", function(m,n){ var bbox = this.getBBox(); var cbbox = this.parentNode.getBBox(); var scale = Math.min(cbbox.width/bbox.width, cbbox.height/bbox.height); m.scale = scale; return (m.scale  + "px"); })
+//                 //.style("fill", "black")
+//                 .attr("id","text_box")
+//                 .text(test_data[userID_test[search_list(time_acc,t)]].speech);
+          
+          /// Need sector number!
+                
+                //tooltip.text("heeheehaahaa").style("visibility", "visible");
+               
+        
+        }
+      
+		// Remove the text box for use with other transcript elements 
+       function previously_remove()
+       {
+            svgContainer.select("#rect_box").remove();
+            svgContainer.selectAll("#text_box").remove();    
+       }
+        // function will be passed the amount of time someone spoke in seconds
+        // and change the size of the node proportionally to the amount
+        // of time
+        // function will also be passed id of person who spoke
+      
+      
+      
+      function update_scale(scale_pos)
+      {
+      
+        for(var k = scale_pos; k < total_time_num; k++ )    // All time values after that point get their radius updated
+        {
+          for(var p = 0; p < numParticipants; p++)      // All circles get their radius updated
+              {
+              rad_mat.subset(math.index(p,k),rad_mat.subset(math.index(p,k))*scale_factor);
+              }
+        }
+        
+      }
+      
+      function dist_calc(I,J)
+      {
+      return Math.sqrt( Math.pow(parseFloat(circleData[I].attr("cx")) - parseFloat(circleData[J].attr("cx")) ,2) + Math.pow( parseFloat(circleData[I].attr("cy")) - parseFloat(circleData[J].attr("cy")) ,2) );      
+      }
+      
+      function reduction(val,ele)
+      {return val+ele;}
+      
+      function format_text(object,sentences,dictionary_of_angles,person,radius){
+    var words = sentences.split(" ");
+    if(Math.round(Math.sqrt(words.length)/2)>0){
+        dimensions= Math.round(Math.sqrt(words.length)/2)}
+    else{dimensions = 1}
+    var containers=[];
+    for(var i=0;i<words.length;i){
+        var temp = "";
+        var counter=0;
+        while (counter<dimensions && i<words.length){
+            if (temp.length!=0){
+                temp+=" ";
+            }
+            temp+=words[i];
+            i++;counter++;
+        }
+        containers.push(temp);
+    }
+    var longest_= 0
+    var index = 0
+    for(var k=0; k<containers.length; k++){
+        if(containers[k].length>longest_){
+            longest_=containers[k].length;
+            index=k;
+        }
+    }
+    object.append("text").attr("x",300).attr("y",300).attr("id","test_text").text(containers[index]);
+    var pixel_length = d3.select("#test_text").node().getComputedTextLength();
+    d3.select("#test_text").remove();
+    var long_length=Math.sqrt(((30+15*(containers.length-1))**2)+((pixel_length+10))**2);
+    var x=((radius+50+long_length/2) * Math.cos(dict_angles[person].value));
+    var y=((radius+50+long_length/2) * Math.sin(dict_angles[person].value));
+    for(var i=0; i<containers.length;i++){
+        object.append("text").attr("x",(x+770/2)-(pixel_length)/2).attr("y",(y+770/2-(15*(containers.length-1))/2+i*15)).attr("id","text_box").text(containers[i]);
+    }
+    // return [containers,pixel_length];
+
+    svgContainer.append("rect")
+        .attr("x", ((radius+50+long_length/2) * Math.cos(dict_angles[person].value)) + (770/2)- ((pixel_length+10)/2))
+        .attr("y", ((radius+50+long_length/2) * Math.sin(dict_angles[person].value)) + (770/2) -(30+15*(containers.length-1))/2)
+        .attr("rx",10)
+        .attr("ry",10)
+        .attr("id","rect_box")
+        .attr("width", pixel_length+10)
+        .attr("height", 30+15*(containers.length-1))
+        .attr("stroke","black")
+        .attr("fill","none")
+        .attr("id","rect_box")
+        .attr("border", "1px solid black");
+}
+      
+      function format_text_old(object,sentences,width,x,y)
+      {
+    var words = sentences.split(" ");
+    var containers=[];
+    for(var i=0;i<words.length;i){
+        var temp = "";
+        while (temp.length<width && i<words.length){
+            if(temp.length==0){
+                temp+=words[i];
+                i++;
+            }else if(!(temp.length+1+words[i].length>width)){
+                temp+=" ";
+                temp+=words[i];
+                i++;
+            }
+            if(i>=words.length ||temp.length+1+words[i].length>width){
+                break;
+            }
+        }
+        containers.push(temp);
+    }
+    for(var i=0; i<containers.length;i++){
+        object.append("text").attr("x",x).attr("y",y+i*15).attr("text-anchor","beginning").attr("id","text_box").text(containers[i]);
+      
+    }
+    return containers.length;
+}
+      
+      function calc_spoken_stats(t)
+      {
+        
+        if(t <= timeSpoken[0])
+        {
+        silent_idx = [];
+        for(var g = 0; g < numParticipants; g++) { if(userID_test[0]!=g){silent_idx.push(g); }}
+          zonda[t] = silent_idx;
+          return;
+        }
+        
+        var time_spoken_curr = [];
+        var pfx = [];
+        var iter = 0;
+        var m = 0,v = 0,sd = 0;
+        var sdint = 1;
+        var step = 0.01;
+        
+        for(iter = 0;iter < numParticipants; iter++ )
+        {
+        time_spoken_curr[iter] = get_t_upto_curr_time(t,iter);
+        }
+        
+        var sfx = (a,b) => a+b;
+        var tot = time_spoken_curr.reduce(sfx);      
+        for(iter = 0; iter < numParticipants; iter++ )
+        {
+        pfx[iter] = time_spoken_curr[iter] / tot;
+        m += pfx[iter] * (iter+1);
+        v += (iter+1 - m)*(iter+1 - m)*(pfx[iter]);
+        }
+        sd = math.sqrt(v);
+       
+        if((sd == 0)&&(pfx.filter(y => y==1).length == 1))  
+        {
+        
+        silent_idx = [];
+        for(var g = 0; g < numParticipants; g++) { if(userID_test[search_list(time_acc,t)]!=g){silent_idx.push(g); }}
+          zonda[t] = silent_idx;
+          return;
+          
+        
+        }
+        
+        while(((m - (sdint)*sd > 0) && (pfx.filter(lw => m - (sdint)*sd > lw )).length > 0 ) ){ sdint+=step;}sdint-=step;
+        
+        // ( (pfx.filter(lw => m - (sdint)*sd
+ // > lw )).filter(lk => lk == 0).length < (pfx.filter(lw => m - (sdint)*sd > lw )).length )
+        var silent_folk = pfx.filter(kw => (m - (sdint)*sd > kw) );
+        silent_idx = [];
+        var cnt_final = 0;
+       
+       for(var f = 0; f < silent_folk.length; f++)
+        {
+          
+        for(var s = 0; s < pfx.length; s++)
+        {
+          if(silent_folk[f] == pfx[s] )
+          {
+          if(!(silent_idx.includes(s)))
+          {
+          silent_idx[cnt_final++] = s;
+          }
+          }
+          
+          }
+        }
+        
+        zonda[t] = silent_idx;
+        
+      }
+      
+      
+      
+        // ourRequest.send();
+    </script>
+    
+</body>
+</html>
