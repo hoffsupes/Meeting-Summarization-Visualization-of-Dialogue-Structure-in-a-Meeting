@@ -8,7 +8,7 @@ Made for the Intelligent Analysis Room, CISL, RPI
 
 3.) A darker shade of blue indicates someone has spoken more
 
-4.) Arrows denote how much one person looks at another, thickness of arrows denote how long they look at someone
+4.) Arrows denote who looks at whom, thickness of arrows denote how long they look at someone
 
 5.) Red outline on circle denotes someone speaking
 
